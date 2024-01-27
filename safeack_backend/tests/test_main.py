@@ -1,8 +1,5 @@
-from safeack_backend.api import app
-from fastapi.testclient import TestClient
 from httpx import Response
-
-client = TestClient(app)
+from . import client
 
 
 def test_200_root():
