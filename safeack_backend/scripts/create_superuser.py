@@ -1,9 +1,7 @@
 from argparse import ArgumentParser
-from sqlalchemy.orm import Session
 from . import db, close_session
 from ..auth.crud import create_user
 from ..auth.schemas import UserCreateSchema
-from ..database import get_db
 
 
 if __name__ == '__main__':
