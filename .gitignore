@@ -216,3 +216,7 @@ poetry.toml
 
 # LSP config files
 pyrightconfig.json
+
+# ignore sqlite dbs
+
+*.db

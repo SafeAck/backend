@@ -1,8 +1,27 @@
+from alembic import command
+from alembic.config import Config
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from .auth import JWTBearer, auth_router
 
+
+@asynccontextmanager
+async def db_lifespan(app: FastAPI):
+    # start up code below
+
+    # auto migrate db
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
+
+    yield
+
+    # clean up code below
+    # ...
+
+
 app = FastAPI(
-    title="SafeAck API"
+    title="SafeAck API",
+    # lifespan=db_lifespan,
 )
 
 # register routers below

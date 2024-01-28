@@ -1,0 +1,75 @@
+# Alembic
+
+Generic single-database configuration.
+
+Alembic is a database migration tool for SQLAlchemy, a popular SQL toolkit and Object-Relational Mapping (ORM) library in Python. Alembic helps you manage database schema changes over time. Here's a step-by-step guide on how to use Alembic:
+
+1. **Install Alembic:**
+   You can install Alembic using pip:
+
+    ```bash
+    pip install alembic
+    ```
+
+2. **Set up your SQLAlchemy Models:**
+   Ensure that you have defined your database models using SQLAlchemy. This could be in a file named `models.py` or something similar.
+
+3. **Initialize Alembic:**
+   Run the following command to set up Alembic in your project:
+
+    ```bash
+    alembic init alembic
+    ```
+
+    This command creates an `alembic` directory with configuration files and folders.
+
+4. **Configure Alembic:**
+   Edit the `alembic.ini` file to set the appropriate database URI. Locate the line that starts with `sqlalchemy.url` and update it with your database connection string.
+
+5. **Create a Migration:**
+   Use the following command to autogenerate an initial migration script based on your SQLAlchemy models:
+
+    ```bash
+    alembic revision --autogenerate -m "initial"
+    ```
+
+    This will create a new migration script in the `alembic/versions` directory.
+
+6. **Review the Migration Script:**
+   Open the generated migration script (located in the `alembic/versions` directory) and review the changes. Alembic tries its best to generate a migration script automatically, but you might need to adjust it manually.
+
+7. **Apply the Migration:**
+   Execute the following command to apply the migration and update the database schema:
+
+    ```bash
+    alembic upgrade head
+    ```
+
+    The `head` keyword means to apply the latest revision.
+
+8. **Generate Additional Migrations:**
+   Whenever you make changes to your database models, run the following command to generate a new migration:
+
+    ```bash
+    alembic revision --autogenerate -m "your_migration_name"
+    ```
+
+9. **Apply Additional Migrations:**
+   To apply the new migration, run:
+
+    ```bash
+    alembic upgrade head
+    ```
+
+    Repeat steps 8-9 each time you make changes to your models.
+
+10. **Rollback Migrations:**
+    If needed, you can rollback to a previous migration using the following command:
+
+```bash
+alembic downgrade -1
+```
+
+The `-1` means to rollback one revision. Adjust the number as needed.
+
+That's a basic overview of using Alembic for database migrations with SQLAlchemy. Remember to customize the process according to your project's needs, and review and test migrations in a development environment before applying them to production databases.

@@ -4,13 +4,14 @@ from re import match
 from ..utils.regex import regexs
 
 
-class UserSchema(BaseModel):
+class UserBase(BaseModel):
+    email: EmailStr = Field(...)
+
+
+class UserSchema(UserBase):
     full_name: str = Field(..., min_length=4, max_length=100)
     first_name: str = Field(..., min_length=2, max_length=30)
     last_name: str = Field(..., min_length=2, max_length=30)
-
-    email: EmailStr = Field(...)
-    password: str = Field(..., min_length=15, max_length=100)
 
     @field_validator("first_name")
     def validate_fname(cls, value):
@@ -43,6 +44,7 @@ class UserSchema(BaseModel):
         return value
 
     class Config:
+        from_attributes = True
         json_schema_extra = {
             "example": {
                 "full_name": "John Doe",
@@ -52,6 +54,10 @@ class UserSchema(BaseModel):
                 "password": "ExamPL3P4$$W0rD!!0194"
             }
         }
+
+
+class UserCreateSchema(UserSchema):
+    password: str = Field(..., min_length=15, max_length=100)
 
 
 class UserLoginSchema(BaseModel):
