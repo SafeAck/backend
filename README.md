@@ -19,3 +19,18 @@ Update env and alembic.ini file when making changes to db
     ```bash
     alembic upgrade head
     ```
+
+## Shell Usage
+
+-   Trigger shell
+
+```bash
+python -m safeack_backend.scripts.shell
+```
+
+-   Enter python or db queries
+
+```python
+from ..models import User
+db.query(User).all()
+```
