@@ -12,6 +12,9 @@ uvicorn = {extras = ["standard"], version = "^0.27.0"}
 pyjwt = "^2.8.0"
 python-decouple = "^3.8"
 pydantic = {extras = ["email"], version = "^2.5.3"}
+sqlalchemy = "^2.0.25"
+alembic = "^1.13.1"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 [tool.poetry.group.dev.dependencies]
 poetry = "^1.7.1"

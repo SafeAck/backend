@@ -57,8 +57,8 @@ class JWTBearer(HTTPBearer):
     def __init__(self, *, auto_error: bool = True):
         super(JWTBearer, self).__init__(
             bearerFormat="Bearer Format",
-            scheme_name="scheme_name",
-            description="description",
+            scheme_name="Bearer",
+            description="Bearer JWT Token after logging in",
             auto_error=auto_error
         )
 
