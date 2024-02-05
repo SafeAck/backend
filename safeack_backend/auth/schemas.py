@@ -1,6 +1,9 @@
+'''
+FastAPI schemas
+'''
+from re import match
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, EmailStr, field_validator
-from re import match
 from ..utils.regex import regexs
 
 
