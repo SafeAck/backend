@@ -1,9 +1,11 @@
 # from alembic import command
 # from alembic.config import Config
 # from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Security
 from .config import DEV_ENV
-from .auth import JWTBearer, auth_router
+from .auth import auth_router, validate_user_perms
+from .auth.permissions import MePerm
+
 
 # @asynccontextmanager
 # async def db_lifespan(app: FastAPI):
@@ -37,6 +39,8 @@ async def read_root() -> dict:
     return {"msg": "SafeAck Backend is Up"}
 
 
-@app.get("/restricted", tags=["root"], dependencies=[Depends(JWTBearer())])
-async def restricted() -> dict:
-    return {"msg": "SafeAck Backend is Up"}
+@app.get("/restricted", tags=["root"])
+async def restricted(
+    user_id: int = Security(Depends(validate_user_perms), scopes=[MePerm.READ.name])
+) -> dict:
+    return {"msg": "SafeAck Backend is Up", "user_id": user_id}

@@ -1,2 +1,2 @@
-from .handler import JWTBearer
-from .views import auth_router
+from .handler import JWTBearer, validate_user_perms  # noqa
+from .views import auth_router  # noqa

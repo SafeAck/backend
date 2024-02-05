@@ -24,7 +24,8 @@ def signup(user: UserCreateSchema = Body(...), db: Session = Depends(get_db)):
 def login(user_data: UserLoginSchema = Body(...), db: Session = Depends(get_db)):
     user = get_user_by_email(db, user_data.email)
     if user and user.is_active and verify_password(user_data.password, user.hashed_password):
-        token = sign_jwt(user.id, JWT_EXPIRY)
-        return {"msg": "token generated successfully", "access_token": token}
+        token = sign_jwt(user.id, user.role, JWT_EXPIRY)
+        if token:
+            return {"msg": "token generated successfully", "access_token": token}
 
     return {"msg": "Failed to login! Check email and password!", "access_token": None}

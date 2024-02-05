@@ -1,5 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String
+'''User Auth Models'''
 
+from sqlalchemy import Boolean, Column, Integer, String, Enum
+from .permissions import Role
 from ..database import Base
 
 
@@ -12,6 +14,7 @@ class User(Base):
     last_name = Column(String)
     full_name = Column(String)
     is_active = Column(Boolean, default=False)
+    role = Column(Enum(Role), default=Role.USER)
     hashed_password = Column(String)
 
     def __str__(self):
