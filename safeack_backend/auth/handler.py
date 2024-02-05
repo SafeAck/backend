@@ -22,19 +22,19 @@ def sign_jwt(user_id: str, expiry_minutes: int = 120) -> str | None:
         "exp": current_time + timedelta(minutes=expiry_minutes),
     }
 
-    token = jwt_encode(
-        payload=payload, algorithm=JWT_ALGORITHM, key=JWT_SECRET)
+    token = jwt_encode(payload=payload, algorithm=JWT_ALGORITHM, key=JWT_SECRET)
 
     return token
 
 
 def verify_jwt(token: str) -> bool:
-    '''Verifies token claims and returns True if claims are 
+    '''Verifies token claims and returns True if claims are
     valid else returns false. If any error occurs then False
     is returned'''
     try:
         decoded_token = jwt_decode(
-            jwt=token, key=JWT_SECRET,
+            jwt=token,
+            key=JWT_SECRET,
             algorithms=[JWT_ALGORITHM],
         )
 
@@ -59,7 +59,7 @@ class JWTBearer(HTTPBearer):
             bearerFormat="Bearer Format",
             scheme_name="Bearer",
             description="Bearer JWT Token after logging in",
-            auto_error=auto_error
+            auto_error=auto_error,
         )
 
     async def __call__(self, request: Request) -> HTTPAuthorizationCredentials | None:
@@ -68,18 +68,13 @@ class JWTBearer(HTTPBearer):
         if credentials:
             if credentials.scheme != "Bearer":
                 logger.warning(
-                    f"{client_ip} tried to provide invalid http scheme {credentials.scheme}")
-                raise HTTPException(
-                    status_code=403,
-                    detail="Invalid Authentication Scheme"
+                    f"{client_ip} tried to provide invalid http scheme {credentials.scheme}"
                 )
+                raise HTTPException(status_code=403, detail="Invalid Authentication Scheme")
 
             if not verify_jwt(credentials.credentials):
                 logger.warning(f"{client_ip} provided invalid credentials")
-                raise HTTPException(
-                    status_code=403,
-                    detail="Invalid or Expired Token"
-                )
+                raise HTTPException(status_code=403, detail="Invalid or Expired Token")
             return credentials.credentials
         else:
             logger.warning(

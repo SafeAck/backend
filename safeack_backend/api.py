@@ -23,7 +23,7 @@ app = FastAPI(
     debug=DEV_ENV,
     openapi_url='/api/v1/openapi.json' if DEV_ENV else None,
     docs_url='/docs' if DEV_ENV else None,
-    redoc_url='/redoc' if DEV_ENV else None
+    redoc_url='/redoc' if DEV_ENV else None,
     # lifespan=db_lifespan,
 )
 

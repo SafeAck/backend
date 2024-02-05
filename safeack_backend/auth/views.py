@@ -7,11 +7,7 @@ from .password import verify_password
 from ..config import JWT_EXPIRY
 from ..database import get_db
 
-auth_router = APIRouter(
-    prefix="/api/v1/auth",
-    tags=["auth"],
-    redirect_slashes=False
-)
+auth_router = APIRouter(prefix="/api/v1/auth", tags=["auth"], redirect_slashes=False)
 
 
 @auth_router.post("/signup")
