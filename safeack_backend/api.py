@@ -3,7 +3,7 @@ from typing import Annotated
 # from alembic import command
 # from alembic.config import Config
 # from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, Security
+from fastapi import FastAPI, Security
 from .config import DEV_ENV
 from .auth import auth_router, validate_user_perms
 from .auth.permissions import MePerm

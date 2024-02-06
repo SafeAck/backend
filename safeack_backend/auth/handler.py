@@ -1,11 +1,12 @@
+from typing import Annotated
 from datetime import datetime, timedelta
-from fastapi import HTTPException
-from fastapi.security import HTTPBearer, OAuth2PasswordBearer
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPBearer, SecurityScopes
 from fastapi.security.http import HTTPAuthorizationCredentials
 from jwt import encode as jwt_encode, decode as jwt_decode
 from starlette.requests import Request
 from traceback import print_exc
-from .permissions import Role, superuser_permissions
+from .permissions import Role
 from ..config import JWT_ALGORITHM, JWT_SECRET
 from ..logger import create_logger
 from ..utils.http import get_user_ip
@@ -19,12 +20,12 @@ def create_oauth_jwt(
     '''Returns signed token for provided user. Returns None if role is invalid.'''
     token = None
 
-    if role in {m.value for m in Role}:
+    if role in Role:
         current_time = datetime.utcnow()
         payload = {
             "user_id": user_id,
             "iss": "safeack",
-            "role": role,
+            "role": role.name,
             "scope": scopes,
             "iat": current_time,
             "exp": current_time + timedelta(minutes=expiry_minutes),
@@ -39,12 +40,12 @@ def sign_jwt(user_id: str, role: str, expiry_minutes: int = 120) -> str | None:
     '''Returns signed token for provided user. Returns None if role is invalid.'''
     token = None
 
-    if role in {m.value for m in Role}:
+    if role in Role:
         current_time = datetime.utcnow()
         payload = {
             "user_id": user_id,
             "iss": "safeack",
-            "role": role,
+            "role": role.name,
             "iat": current_time,
             "exp": current_time + timedelta(minutes=expiry_minutes),
         }

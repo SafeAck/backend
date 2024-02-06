@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 from .schemas import UserCreateSchema, UserLoginSchema, TokenResponseSchema
 from .crud import create_user, get_user_by_email
 from .permissions import superuser_permissions, role_based_scopes
-from .handler import sign_jwt, create_oauth_jwt
+from .handler import sign_jwt, create_oauth_jwt, jwt_decode, JWTBearer
 from .password import verify_password
-from ..config import JWT_EXPIRY
+from ..config import JWT_EXPIRY, JWT_ALGORITHM, JWT_SECRET
 from ..database import get_db
 from ..logger import create_logger
 
@@ -43,7 +43,6 @@ def login(
     user = get_user_by_email(db, user_data.email)
     if user and user.is_active and verify_password(user_data.password, user.hashed_password):
         token = sign_jwt(user.id, user.role, JWT_EXPIRY)
-        print(token)
         if token:
             msg = "token generated successfully"
 
@@ -56,15 +55,15 @@ async def login_for_access_token(
 ) -> TokenResponseSchema:
     email = form_data.username
     password = form_data.password
+    scopes = form_data.scopes
 
     msg = "Failed to login! Check email and password!"
     token = None
     user = get_user_by_email(db, email)
     # if user and user.is_active and verify_password(password, user.hashed_password):
-    if user and verify_password(
-        password, user.hashed_password
-    ):  # TODO: check if user is active or not
-        token = create_oauth_jwt(user.id, user.role, JWT_EXPIRY)
+    if user and user.is_active and verify_password(password, user.hashed_password):
+        valid_scopes = scopes and list(role_based_scopes[user.role.name].keys())
+        token = create_oauth_jwt(user.id, user.role, valid_scopes, JWT_EXPIRY)
         if token:
             msg = "token generated successfully"
 
@@ -72,13 +71,19 @@ async def login_for_access_token(
 
 
 def validate_user_perms(
-    security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme, use_cache=False)]
+    security_scopes: SecurityScopes,
+    token: Annotated[str, Depends(oauth2_scheme, use_cache=True)]
+    or Annotated[str, Depends(JWTBearer(), use_cache=True)],
 ) -> int:
     '''validates current user permission and returns user id. Raises exception if current user lack permissions'''
-    logger.info('test')
-    print(token)
-    user_role = token["role"]
-    user_id = int(token["user_id"])
+    decoded_token = jwt_decode(
+        jwt=token,
+        key=JWT_SECRET,
+        algorithms=[JWT_ALGORITHM],
+    )
+
+    user_role = decoded_token["role"]
+    user_id = int(decoded_token["user_id"])
     role_scopes = role_based_scopes[user_role]
     role_scope_keys = role_scopes.keys()
 
