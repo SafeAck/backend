@@ -1,6 +1,10 @@
+'''
+FastAPI schemas
+'''
+
+from re import match
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, EmailStr, field_validator
-from re import match
 from ..utils.regex import regexs
 
 
@@ -51,7 +55,7 @@ class UserSchema(UserBase):
                 "first_name": "John",
                 "last_name": "Doe",
                 "email": "john.doe@example.com",
-                "password": "ExamPL3P4$$W0rD!!0194"
+                "password": "ExamPL3P4$$W0rD!!0194",
             }
         }
 
@@ -66,8 +70,10 @@ class UserLoginSchema(BaseModel):
 
     class Config:
         json_schema_extra = {
-            "example": {
-                "email": "john.doe@example.com",
-                "password": "ExamPL3P4$$W0rD!!0194"
-            }
+            "example": {"email": "john.doe@example.com", "password": "ExamPL3P4$$W0rD!!0194"}
         }
+
+
+class TokenResponseSchema(BaseModel):
+    msg: str | None
+    access_token: str | None

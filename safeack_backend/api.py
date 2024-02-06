@@ -1,26 +1,33 @@
-from alembic import command
-from alembic.config import Config
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
-from .auth import JWTBearer, auth_router
+from typing import Annotated
+
+# from alembic import command
+# from alembic.config import Config
+# from contextlib import asynccontextmanager
+from fastapi import FastAPI, Security
+from .config import DEV_ENV
+from .auth import auth_router, validate_user_perms
+from .auth.permissions import MePerm
 
 
-@asynccontextmanager
-async def db_lifespan(app: FastAPI):
-    # start up code below
+# @asynccontextmanager
+# async def db_lifespan(app: FastAPI):
+#     # start up code below
 
-    # auto migrate db
-    alembic_cfg = Config("alembic.ini")
-    command.upgrade(alembic_cfg, "head")
+#     # auto migrate db
+#     alembic_cfg = Config("alembic.ini")
+#     command.upgrade(alembic_cfg, "head")
 
-    yield
+#     yield
 
-    # clean up code below
-    # ...
-
+#     # clean up code below
+#     # ...
 
 app = FastAPI(
     title="SafeAck API",
+    debug=DEV_ENV,
+    openapi_url='/api/v1/openapi.json' if DEV_ENV else None,
+    docs_url='/docs' if DEV_ENV else None,
+    redoc_url='/redoc' if DEV_ENV else None,
     # lifespan=db_lifespan,
 )
 
@@ -34,6 +41,9 @@ async def read_root() -> dict:
     return {"msg": "SafeAck Backend is Up"}
 
 
-@app.get("/restricted", tags=["root"], dependencies=[Depends(JWTBearer())])
-async def restricted() -> dict:
-    return {"msg": "SafeAck Backend is Up"}
+@app.get("/restricted", tags=["root"])
+async def restricted(
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.name])]
+    # user_id: Annotated[int, Security(validate_user_perms, scopes=MePerm.READ.name)]
+) -> dict:
+    return {"msg": "SafeAck Backend is Up", "user_id": user_id}

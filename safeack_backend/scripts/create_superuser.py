@@ -6,12 +6,15 @@ from ..auth.schemas import UserCreateSchema
 
 if __name__ == '__main__':
     parser = ArgumentParser('create_superuser')
-    parser.add_argument('-e', '--email', dest='email',
-                        help='email of superuser', required=True, type=str)
-    parser.add_argument('-p', '--password', dest='password',
-                        help='password for superuser', required=True, type=str)
-    parser.add_argument('-n', '--name', dest='full_name',
-                        help='Full name of superuser', required=True, type=str)
+    parser.add_argument(
+        '-e', '--email', dest='email', help='email of superuser', required=True, type=str
+    )
+    parser.add_argument(
+        '-p', '--password', dest='password', help='password for superuser', required=True, type=str
+    )
+    parser.add_argument(
+        '-n', '--name', dest='full_name', help='Full name of superuser', required=True, type=str
+    )
 
     args = parser.parse_args()
 

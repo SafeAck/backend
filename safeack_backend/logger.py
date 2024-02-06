@@ -1,6 +1,10 @@
 import logging
 
 
+# https://github.com/pyca/bcrypt/issues/684#issuecomment-1858400267
+logging.getLogger('passlib').setLevel(logging.ERROR)
+
+
 def create_logger(name: str, level: int = logging.INFO):
     logger = logging.getLogger(name)
 
@@ -13,7 +17,8 @@ def create_logger(name: str, level: int = logging.INFO):
 
     # Create a formatter and add it to the handler
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(lineno)d - %(message)s")
+        "%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(lineno)d - %(message)s"
+    )
     console_handler.setFormatter(formatter)
 
     # Add the handler to the logger
