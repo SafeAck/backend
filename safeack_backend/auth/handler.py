@@ -1,17 +1,38 @@
 from datetime import datetime, timedelta
-from typing import Annotated
-from fastapi import HTTPException, Depends, status
-from fastapi.security import HTTPBearer, SecurityScopes
+from fastapi import HTTPException
+from fastapi.security import HTTPBearer, OAuth2PasswordBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from jwt import encode as jwt_encode, decode as jwt_decode
 from starlette.requests import Request
 from traceback import print_exc
-from .permissions import Role, role_based_scopes
+from .permissions import Role, superuser_permissions
 from ..config import JWT_ALGORITHM, JWT_SECRET
 from ..logger import create_logger
 from ..utils.http import get_user_ip
 
 logger = create_logger(__name__)
+
+
+def create_oauth_jwt(
+    user_id: str, role: str, scopes: list[str], expiry_minutes: int = 120
+) -> str | None:
+    '''Returns signed token for provided user. Returns None if role is invalid.'''
+    token = None
+
+    if role in {m.value for m in Role}:
+        current_time = datetime.utcnow()
+        payload = {
+            "user_id": user_id,
+            "iss": "safeack",
+            "role": role,
+            "scope": scopes,
+            "iat": current_time,
+            "exp": current_time + timedelta(minutes=expiry_minutes),
+        }
+
+        token = jwt_encode(payload=payload, algorithm=JWT_ALGORITHM, key=JWT_SECRET)
+
+    return token
 
 
 def sign_jwt(user_id: str, role: str, expiry_minutes: int = 120) -> str | None:
@@ -94,22 +115,3 @@ class JWTBearer(HTTPBearer):
                 status_code=401,
                 detail="Invalid Authorization Token",
             )
-
-
-def validate_user_perms(security_scopes: SecurityScopes, token=Depends(JWTBearer())) -> int:
-    '''validates current user permission and returns user id. Raises exception if current user lack permissions'''
-    logger.error(token)
-    user_role = token["role"]
-    user_id = token["user_id"]
-    role_scopes = role_based_scopes[user_role]
-    role_scope_keys = role_scopes.keys()
-
-    for scope in security_scopes.scopes:
-        if scope not in role_scope_keys:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Not enough permissions",
-                # headers={"WWW-Authenticate": authenticate_value},
-            )
-
-    return user_id

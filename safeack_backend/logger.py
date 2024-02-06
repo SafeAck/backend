@@ -1,6 +1,10 @@
 import logging
 
 
+# https://github.com/pyca/bcrypt/issues/684#issuecomment-1858400267
+logging.getLogger('passlib').setLevel(logging.ERROR)
+
+
 def create_logger(name: str, level: int = logging.INFO):
     logger = logging.getLogger(name)
 

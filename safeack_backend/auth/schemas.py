@@ -72,3 +72,8 @@ class UserLoginSchema(BaseModel):
         json_schema_extra = {
             "example": {"email": "john.doe@example.com", "password": "ExamPL3P4$$W0rD!!0194"}
         }
+
+
+class TokenResponseSchema(BaseModel):
+    msg: str | None
+    access_token: str | None

@@ -1,3 +1,5 @@
+from typing import Annotated
+
 # from alembic import command
 # from alembic.config import Config
 # from contextlib import asynccontextmanager
@@ -41,6 +43,7 @@ async def read_root() -> dict:
 
 @app.get("/restricted", tags=["root"])
 async def restricted(
-    user_id: int = Security(Depends(validate_user_perms), scopes=[MePerm.READ.name])
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.name])]
+    # user_id: Annotated[int, Security(validate_user_perms, scopes=MePerm.READ.name)]
 ) -> dict:
     return {"msg": "SafeAck Backend is Up", "user_id": user_id}
