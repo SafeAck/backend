@@ -11,4 +11,5 @@ regexs = {
     "s3_result_path": compile(
         r"s3:\/\/[a-zA-Z0-9.\-_]{1,255}\/safeack-results\/[0-9a-f]{32}\.json"
     ),
+    "extract_s3_result_path": compile(r"s3://([^/]+)/(.+)"),
 }

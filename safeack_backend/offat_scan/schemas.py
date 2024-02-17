@@ -26,3 +26,9 @@ class ScanResultSchema(BaseModel):
                 "s3_bucket_path": "s3://test/safeack-results/03ac6cafbea141e185570985c6316ad3.json"
             }
         }
+
+
+class GetScanResultSchema(BaseModel):
+    """Scan Result Get Model"""
+
+    scan_id: int
