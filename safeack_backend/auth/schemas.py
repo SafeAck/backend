@@ -2,7 +2,6 @@
 FastAPI schemas
 '''
 
-from re import match
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, EmailStr, field_validator
 from ..utils.regex import regexs
@@ -19,7 +18,7 @@ class UserSchema(UserBase):
 
     @field_validator("first_name")
     def validate_fname(cls, value):
-        if not match(regexs["name"], value):
+        if not regexs["name"].match(value):
             raise HTTPException(
                 status_code=400,
                 detail="first name can only contain smallcase and uppercase characters",
@@ -29,7 +28,7 @@ class UserSchema(UserBase):
 
     @field_validator("last_name")
     def validate_lname(cls, value):
-        if not match(regexs["name"], value):
+        if not regexs["name"].match(value):
             raise HTTPException(
                 status_code=400,
                 detail="last name can only contain smallcase and uppercase characters",
@@ -39,7 +38,7 @@ class UserSchema(UserBase):
 
     @field_validator("full_name")
     def validate_full_name(cls, value):
-        if not match(regexs["full_name"], value):
+        if not regexs["full_name"].match(value):
             raise HTTPException(
                 status_code=400,
                 detail="full name can only contain smallcase, uppercase and space characters",
