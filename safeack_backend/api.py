@@ -1,13 +1,19 @@
 from typing import Annotated
-
-# from alembic import command
-# from alembic.config import Config
-# from contextlib import asynccontextmanager
 from fastapi import FastAPI, Security
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from .config import DEV_ENV
 from .auth import auth_router, validate_user_perms
 from .auth.permissions import MePerm
 from .offat_scan import scan_router
+
+
+async def validation_exception_handler(request, exc):
+    # Custom exception handler for RequestValidationError
+    return JSONResponse(
+        status_code=422,
+        content={"detail": "Invalid input data"},
+    )
 
 
 app = FastAPI(
@@ -16,8 +22,11 @@ app = FastAPI(
     openapi_url='/api/v1/openapi.json' if DEV_ENV else None,
     docs_url='/docs' if DEV_ENV else None,
     redoc_url='/redoc' if DEV_ENV else None,
-    # lifespan=db_lifespan,
 )
+
+if not DEV_ENV:
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
+
 
 # register routers below
 app.include_router(auth_router)
@@ -32,7 +41,6 @@ async def read_root() -> dict:
 
 @app.get("/restricted", tags=["root"])
 async def restricted(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.name])]
-    # user_id: Annotated[int, Security(validate_user_perms, scopes=MePerm.READ.name)]
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.name])],
 ) -> dict:
     return {"msg": "SafeAck Backend is Up", "user_id": user_id}

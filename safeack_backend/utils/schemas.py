@@ -9,5 +9,5 @@ class ResponseSchema(BaseModel):
     """basic Response Schema for returning response"""
 
     msg: str
-    data: dict | None
+    data: dict | list[dict] | None
     status_code: int = 200
