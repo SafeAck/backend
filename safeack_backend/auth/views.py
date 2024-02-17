@@ -25,7 +25,7 @@ auth_router = APIRouter(prefix=auth_url_prefix, tags=["auth"], redirect_slashes=
 
 
 @auth_router.post("/signup")
-def signup(user: UserCreateSchema = Body(...), db: Session = Depends(get_db)):
+async def signup(user: UserCreateSchema = Body(...), db: Session = Depends(get_db)):
     user_exists = get_user_by_email(db, user.email)
 
     if not user_exists and create_user(db, user):
@@ -35,7 +35,7 @@ def signup(user: UserCreateSchema = Body(...), db: Session = Depends(get_db)):
 
 
 @auth_router.post("/token")
-def login(
+async def login(
     user_data: UserLoginSchema = Body(...), db: Session = Depends(get_db)
 ) -> TokenResponseSchema:
     msg = "Failed to login! Check email and password!"

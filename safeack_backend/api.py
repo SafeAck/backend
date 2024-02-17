@@ -7,20 +7,8 @@ from fastapi import FastAPI, Security
 from .config import DEV_ENV
 from .auth import auth_router, validate_user_perms
 from .auth.permissions import MePerm
+from .offat_scan import scan_router
 
-
-# @asynccontextmanager
-# async def db_lifespan(app: FastAPI):
-#     # start up code below
-
-#     # auto migrate db
-#     alembic_cfg = Config("alembic.ini")
-#     command.upgrade(alembic_cfg, "head")
-
-#     yield
-
-#     # clean up code below
-#     # ...
 
 app = FastAPI(
     title="SafeAck API",
@@ -33,6 +21,7 @@ app = FastAPI(
 
 # register routers below
 app.include_router(auth_router)
+app.include_router(scan_router)
 
 
 @app.get("/", tags=["root"])

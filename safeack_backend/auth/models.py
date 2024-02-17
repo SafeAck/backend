@@ -18,4 +18,4 @@ class User(Base):
     hashed_password = Column(String)
 
     def __str__(self):
-        return f'{self.full_name} - {self.id} - {self.is_active}'
+        return f'{self.id} - {self.is_active} - {self.full_name} '
