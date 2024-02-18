@@ -1,7 +1,6 @@
-from typing import Annotated
 from datetime import datetime, timedelta
-from fastapi import HTTPException, Depends
-from fastapi.security import HTTPBearer, SecurityScopes
+from fastapi import HTTPException
+from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from jwt import encode as jwt_encode, decode as jwt_decode
 from starlette.requests import Request
@@ -15,7 +14,7 @@ logger = create_logger(__name__)
 
 
 def create_oauth_jwt(
-    user_id: str, role: str, scopes: list[str], expiry_minutes: int = 120
+    user_id: int, role: str, scopes: list[str], expiry_minutes: int = 120
 ) -> str | None:
     '''Returns signed token for provided user. Returns None if role is invalid.'''
     token = None
@@ -25,7 +24,7 @@ def create_oauth_jwt(
         payload = {
             "user_id": user_id,
             "iss": "safeack",
-            "role": role.name,
+            "role": role,
             "scope": scopes,
             "iat": current_time,
             "exp": current_time + timedelta(minutes=expiry_minutes),
@@ -45,7 +44,7 @@ def sign_jwt(user_id: str, role: str, expiry_minutes: int = 120) -> str | None:
         payload = {
             "user_id": user_id,
             "iss": "safeack",
-            "role": role.name,
+            "role": role.value,
             "iat": current_time,
             "exp": current_time + timedelta(minutes=expiry_minutes),
         }
