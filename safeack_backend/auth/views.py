@@ -76,11 +76,18 @@ def validate_user_perms(
     or Annotated[str, Depends(JWTBearer(), use_cache=True)],
 ) -> int:
     '''validates current user permission and returns user id. Raises exception if current user lack permissions'''
-    decoded_token = jwt_decode(
-        jwt=token,
-        key=JWT_SECRET,
-        algorithms=[JWT_ALGORITHM],
-    )
+    try:
+        decoded_token = jwt_decode(
+            jwt=token,
+            key=JWT_SECRET,
+            algorithms=[JWT_ALGORITHM],
+        )
+    except Exception as e:
+        logger.error("Error occurred while validating token %s due to error: %s", token, e)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Token",
+        )
 
     user_role = decoded_token["role"]
     user_id = int(decoded_token["user_id"])
