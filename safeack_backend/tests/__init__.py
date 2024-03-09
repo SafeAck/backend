@@ -1,11 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from fastapi.testclient import TestClient
 
 from ..database import Base, get_db
 from ..api import app
 
+import pytest
+
+# Test DB Config
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
 engine = create_engine(
@@ -27,4 +29,13 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
-client = TestClient(app)
+# Pytest config
+
+
+@pytest.fixture
+def anyio_backend():
+    return 'asyncio'
+
+
+# for Async Test Client
+base_url = "http://localhost:8080"
