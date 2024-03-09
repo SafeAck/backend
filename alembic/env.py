@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from safeack_backend.database import Base
-from safeack_backend.models import *
+from safeack_backend.models import *  # noqa: F401 F403
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

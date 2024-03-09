@@ -1,4 +1,4 @@
-from . import db, close_session
+from . import close_session
 from IPython import embed
 
 

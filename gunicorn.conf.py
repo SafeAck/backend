@@ -1,7 +1,6 @@
 from os import environ
 from multiprocessing import cpu_count
 from dotenv import load_dotenv
-from gunicorn import __main__
 
 load_dotenv(".env")
 
