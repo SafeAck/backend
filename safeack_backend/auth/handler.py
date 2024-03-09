@@ -1,7 +1,6 @@
-from typing import Annotated
-from datetime import datetime, timedelta
-from fastapi import HTTPException, Depends
-from fastapi.security import HTTPBearer, SecurityScopes
+from datetime import datetime, timedelta, UTC
+from fastapi import HTTPException
+from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from jwt import encode as jwt_encode, decode as jwt_decode
 from starlette.requests import Request
@@ -15,17 +14,17 @@ logger = create_logger(__name__)
 
 
 def create_oauth_jwt(
-    user_id: str, role: str, scopes: list[str], expiry_minutes: int = 120
+    user_id: int, role: str, scopes: list[str], expiry_minutes: int = 120
 ) -> str | None:
     '''Returns signed token for provided user. Returns None if role is invalid.'''
     token = None
 
     if role in Role:
-        current_time = datetime.utcnow()
+        current_time = datetime.now(UTC)
         payload = {
             "user_id": user_id,
             "iss": "safeack",
-            "role": role.name,
+            "role": role,
             "scope": scopes,
             "iat": current_time,
             "exp": current_time + timedelta(minutes=expiry_minutes),
@@ -41,11 +40,11 @@ def sign_jwt(user_id: str, role: str, expiry_minutes: int = 120) -> str | None:
     token = None
 
     if role in Role:
-        current_time = datetime.utcnow()
+        current_time = datetime.now(UTC)
         payload = {
             "user_id": user_id,
             "iss": "safeack",
-            "role": role.name,
+            "role": role.value,
             "iat": current_time,
             "exp": current_time + timedelta(minutes=expiry_minutes),
         }
@@ -69,7 +68,7 @@ def verify_jwt(token: str) -> bool:
         if decoded_token["iss"] != "safeack":
             return False
 
-        current_time = datetime.utcnow()
+        current_time = datetime.now(UTC)
         expiration_time = datetime.fromtimestamp(decoded_token["exp"])
         if current_time >= expiration_time:
             return False

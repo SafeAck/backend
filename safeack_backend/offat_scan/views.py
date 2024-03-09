@@ -24,7 +24,7 @@ scan_router = APIRouter(prefix="/api/v1/scanner", tags=["scan"], redirect_slashe
 
 @scan_router.post("/results")
 async def save_result(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.name])],
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value])],
     result: ScanResultSchema = Body(...),
     db: Session = Depends(get_db),
 ):
@@ -46,7 +46,7 @@ async def save_result(
 
 @scan_router.get("/results")
 async def get_results(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.name])],
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.value])],
     skip: int = Query(0, alias="page", ge=0),
     limit: int = Query(10, ge=0, le=50),
     db: Session = Depends(get_db),
@@ -80,7 +80,7 @@ async def get_results(
 
 @scan_router.get("/result-aws-link/{result_id}")
 async def get_result(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.name])],
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.value])],
     result_id: int,
     expiration: int = Query(300, ge=120, le=604800),
     db: Session = Depends(get_db),

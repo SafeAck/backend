@@ -27,15 +27,15 @@ class StaffPerm(Enum):
 
 
 user_permissions: dict[str, str] = {
-    MePerm.READ.name: "read information about current user",
-    MePerm.WRITE.name: "write information about current user",
-    MePerm.READ_RESULTS.name: "read information about current user's scan results",
-    MePerm.WRITE_RESULTS.name: "write information about current user's scan results",
+    MePerm.READ.value: "read information about current user",
+    MePerm.WRITE.value: "write information about current user",
+    MePerm.READ_RESULTS.value: "read information about current user's scan results",
+    MePerm.WRITE_RESULTS.value: "write information about current user's scan results",
 }
 
 
 staff_permissions: dict[str, str] = {
-    StaffPerm.RESTRICTED_READ.name: "read all users scan results",
+    StaffPerm.RESTRICTED_READ.value: "read all users scan results",
 }
 
 # make sure user and staff permission have unique keys
@@ -45,7 +45,7 @@ superuser_permissions: dict[str, str] = {
 }
 
 role_based_scopes: dict[str, dict[str, str]] = {
-    Role.USER.name: user_permissions,
-    Role.STAFF.name: staff_permissions,
-    Role.SUPERUSER.name: superuser_permissions,
+    Role.USER.value: user_permissions,
+    Role.STAFF.value: staff_permissions,
+    Role.SUPERUSER.value: superuser_permissions,
 }

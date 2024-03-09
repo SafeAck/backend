@@ -20,6 +20,10 @@ app = FastAPI(
     title="SafeAck API",
     debug=DEV_ENV,
     openapi_url='/api/v1/openapi.json' if DEV_ENV else None,
+    servers=[
+        {"url": "http://localhost:8080", "description": "Local environment"},
+        # {"url": "http://localhost:8000", "description": "Production environment"},
+    ],
     docs_url='/docs' if DEV_ENV else None,
     redoc_url='/redoc' if DEV_ENV else None,
 )
@@ -41,6 +45,6 @@ async def read_root() -> dict:
 
 @app.get("/restricted", tags=["root"])
 async def restricted(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.name])],
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.value])],
 ) -> dict:
     return {"msg": "SafeAck Backend is Up", "user_id": user_id}

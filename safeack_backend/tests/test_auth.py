@@ -11,9 +11,10 @@ def test_create_user():
         "password": "ExamPL3P4$$W0rD!!0194",
     }
     res: Response = client.post("/api/v1/auth/signup", json=payload)
+    res_body = res.json()
 
     assert res.status_code == 200
-    assert res.json() == {"msg": "user signed up sucessfully"}
+    assert res_body == {"msg": "user signed up sucessfully"}
 
 
 def test_unsuccessful_create_user():
@@ -50,13 +51,36 @@ def test_unsuccessful_create_user():
     for payload in payloads:
         res: Response = client.post("/api/v1/auth/signup", json=payload)
 
+        res_body = res.json()
+
         assert res.status_code in {200, 400, 422}
-        assert res.json() != {"msg": "user signed up sucessfully"}
+        assert res_body != {"msg": "user signed up sucessfully"}
 
 
 def test_login_user():
     payload = {"email": "john.doe@example.com", "password": "ExamPL3P4$$W0rD!!0194"}
-    res: Response = client.post("/api/v1/auth/login", json=payload)
+    res: Response = client.post("/api/v1/auth/token", json=payload)
+
+    res_body = res.json()
+    token = res_body.get('access_token', "")
 
     assert res.status_code == 200
-    assert "access_token" in res.json()
+    assert token != ""
+    assert token is not None
+
+
+def test_oauth_login_user():
+    payload = {
+        "grant_type": "password",
+        "scope": "me:read+me:write+me:read_results+me:write_results+staff:restricted_read",
+        "username": "john.doe@example.com",
+        "password": "ExamPL3P4$$W0rD!!0194",
+    }
+
+    res: Response = client.post("/api/v1/auth/oauth/login", data=payload)
+    res_body = res.json()
+    token = res_body.get('access_token', "")
+
+    assert res.status_code == 200
+    assert token != ""
+    assert token is not None

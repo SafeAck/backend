@@ -60,10 +60,10 @@ async def login_for_access_token(
     msg = "Failed to login! Check email and password!"
     token = None
     user = get_user_by_email(db, email)
-    # if user and user.is_active and verify_password(password, user.hashed_password):
+
     if user and user.is_active and verify_password(password, user.hashed_password):
-        valid_scopes = scopes and list(role_based_scopes[user.role.name].keys())
-        token = create_oauth_jwt(user.id, user.role, valid_scopes, JWT_EXPIRY)
+        valid_scopes = list(set(scopes) & set(role_based_scopes[user.role.value].keys()))
+        token = create_oauth_jwt(user.id, user.role.value, valid_scopes, JWT_EXPIRY)
         if token:
             msg = "token generated successfully"
 
@@ -91,15 +91,21 @@ def validate_user_perms(
 
     user_role = decoded_token["role"]
     user_id = int(decoded_token["user_id"])
-    role_scopes = role_based_scopes[user_role]
-    role_scope_keys = role_scopes.keys()
+
+    # for oauth
+    role_scopes = decoded_token.get("scope", None)
+    role_scope_keys = role_scopes
+
+    # if no scope found in token then fallback to RBAC perms
+    if not role_scopes:
+        role_scopes = role_based_scopes[user_role]
+        role_scope_keys = list(role_scopes.keys())
 
     for scope in security_scopes.scopes:
         if scope not in role_scope_keys:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Not enough permissions",
-                # headers={"WWW-Authenticate": authenticate_value},
             )
 
     return user_id

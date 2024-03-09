@@ -46,5 +46,4 @@ def orm_query_response_to_dict(
     else:
         results.append(approach_func(query.dict(), fields))
 
-    print('results:', results)
     return results
