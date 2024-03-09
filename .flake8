@@ -1,7 +1,9 @@
 [flake8]
 exclude =
-    migrations
-    __pycache__
-    env
-    .env
-    alembic/versions/
+    .git,
+    __pycache__,
+    env,
+    .env,
+    alembic/versions/,
+    build,
+    dist

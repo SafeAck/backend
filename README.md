@@ -2,6 +2,9 @@
 
 APIs for SafeAck Applications
 
+* Tests Status [![Run SafeAck API App Tests](https://github.com/SafeAck/backend/actions/workflows/python-package.yml/badge.svg)](https://github.com/SafeAck/backend/actions/workflows/python-package.yml)
+
+
 ## Config
 
 Update env and alembic.ini file when making changes to db
