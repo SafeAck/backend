@@ -4,20 +4,19 @@ APIs for SafeAck Applications
 
 * Tests Status [![Run SafeAck API App Tests](https://github.com/SafeAck/backend/actions/workflows/python-package.yml/badge.svg)](https://github.com/SafeAck/backend/actions/workflows/python-package.yml)
 
-
 ## Config
 
 Update env and alembic.ini file when making changes to db
 
--   import newly generated model in `safeack-backend/models.py`
+* import newly generated model in `safeack-backend/models.py`
 
--   create migrations
+* create migrations
 
     ```bash
     alembic revision --autogenerate -m "init"
     ```
 
--   apply migrations
+* apply migrations
 
     ```bash
     alembic upgrade head
@@ -25,13 +24,13 @@ Update env and alembic.ini file when making changes to db
 
 ## Shell Usage
 
--   Trigger shell
+* Trigger shell
 
 ```bash
 python -m safeack_backend.scripts.shell
 ```
 
--   Enter python or db queries
+* Enter python or db queries
 
 ```python
 from ..models import User
