@@ -56,7 +56,7 @@ def test_unsuccessful_create_user():
 
 def test_login_user():
     payload = {"email": "john.doe@example.com", "password": "ExamPL3P4$$W0rD!!0194"}
-    res: Response = client.post("/api/v1/auth/login", json=payload)
+    res: Response = client.post("/api/v1/auth/token", json=payload)
 
     assert res.status_code == 200
     assert "access_token" in res.json()
