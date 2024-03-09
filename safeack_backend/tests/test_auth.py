@@ -36,7 +36,7 @@ async def test_create_user():
         db.close()
 
     assert res.status_code == 200
-    assert res.json() == {"msg": "user signed up sucessfully"}
+    assert res_body == {"msg": "user signed up sucessfully"}
 
 
 async def test_unsuccessful_create_user():
