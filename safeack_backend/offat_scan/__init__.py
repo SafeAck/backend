@@ -1,1 +1,1 @@
-from .views import scan_router
+from .views import scan_router  # noqa: F401
