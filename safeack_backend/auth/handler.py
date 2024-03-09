@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
@@ -20,7 +20,7 @@ def create_oauth_jwt(
     token = None
 
     if role in Role:
-        current_time = datetime.utcnow()
+        current_time = datetime.now(UTC)
         payload = {
             "user_id": user_id,
             "iss": "safeack",
@@ -40,7 +40,7 @@ def sign_jwt(user_id: str, role: str, expiry_minutes: int = 120) -> str | None:
     token = None
 
     if role in Role:
-        current_time = datetime.utcnow()
+        current_time = datetime.now(UTC)
         payload = {
             "user_id": user_id,
             "iss": "safeack",
@@ -68,7 +68,7 @@ def verify_jwt(token: str) -> bool:
         if decoded_token["iss"] != "safeack":
             return False
 
-        current_time = datetime.utcnow()
+        current_time = datetime.now(UTC)
         expiration_time = datetime.fromtimestamp(decoded_token["exp"])
         if current_time >= expiration_time:
             return False
