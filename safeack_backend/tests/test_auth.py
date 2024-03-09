@@ -29,14 +29,15 @@ async def test_create_user():
     async with AsyncClient(app=app, base_url=base_url) as ac:
         # TODO: mark this newly created user active, else jobs will break
         res: Response = await ac.post("/api/v1/auth/signup", json=payload)
+        res_body = res.json()
 
         # mark this newly created user active
         db = TestingSessionLocal()
         set_user_active(db, email)
         db.close()
 
-    assert res.status_code == 200
-    assert res_body == {"msg": "user signed up sucessfully"}
+        assert res.status_code == 200
+        assert res_body == {"msg": "user signed up sucessfully"}
 
 
 async def test_unsuccessful_create_user():
