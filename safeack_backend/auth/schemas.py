@@ -73,6 +73,21 @@ class UserLoginSchema(BaseModel):
         }
 
 
+class UserScannerTokenSchema(BaseModel):
+    expiry_minutes: int = Field(..., gt=100, lt=43831)  # allow maximum 1m
+
+    class Config:
+        json_schema_extra = {"example": {"expiry_minutes": 10080}}
+
+
 class TokenResponseSchema(BaseModel):
     msg: str | None
     access_token: str | None
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "msg": "Some Message",
+                "access_token": "token provided if user is active and has necessary perms",
+            }
+        }

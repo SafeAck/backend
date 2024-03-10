@@ -10,6 +10,24 @@ def get_user_by_email(db: Session, email: str) -> models.User | None:
     return db.query(models.User).filter(models.User.email == email).first()
 
 
+def get_user_active_status(db: Session, user_id: int) -> tuple:
+    '''
+    Returns user activity status and role for provided user id
+    '''
+    user_data = (
+        db.query(models.User.is_active, models.User.role).filter(models.User.id == user_id).first()
+    )
+
+    return (
+        user_data.tuple()
+        if user_data
+        else (
+            None,
+            None,
+        )
+    )
+
+
 def get_users(db: Session, skip: int = 0, limit: int = 100) -> list[models.User]:
     return db.query(models.User).offset(skip).limit(limit).all()
 
