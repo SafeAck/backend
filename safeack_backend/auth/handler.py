@@ -1,20 +1,27 @@
+"""
+JWT token handler functions and classes
+"""
+
 from datetime import datetime, timedelta, UTC
+from sys import exc_info
+
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from jwt import encode as jwt_encode, decode as jwt_decode
 from starlette.requests import Request
-from traceback import print_exc
+
 from .permissions import Role
 from ..config import JWT_ALGORITHM, JWT_SECRET
 from ..logger import create_logger
 from ..utils.http import get_user_ip
 
+
 logger = create_logger(__name__)
 
 
 def create_oauth_jwt(
-    user_id: int, role: str, scopes: list[str], expiry_minutes: int = 120
+    user_id: int, role: Role, scopes: list[str], expiry_minutes: int = 120
 ) -> str | None:
     '''Returns signed token for provided user. Returns None if role is invalid.'''
     token = None
@@ -24,7 +31,7 @@ def create_oauth_jwt(
         payload = {
             "user_id": user_id,
             "iss": "safeack",
-            "role": role,
+            "role": role.value,
             "scope": scopes,
             "iat": current_time,
             "exp": current_time + timedelta(minutes=expiry_minutes),
@@ -35,7 +42,7 @@ def create_oauth_jwt(
     return token
 
 
-def sign_jwt(user_id: str, role: str, expiry_minutes: int = 120) -> str | None:
+def sign_jwt(user_id: str, role: Role, expiry_minutes: int = 120) -> str | None:
     '''Returns signed token for provided user. Returns None if role is invalid.'''
     token = None
 
@@ -75,12 +82,15 @@ def verify_jwt(token: str) -> bool:
 
         return True
     except Exception as e:
-        logger.error('Failed to verify JWT token due to error: %s', repr(e))
-        print_exc()
+        logger.error('Failed to verify JWT token due to error: %s', repr(e), exc_info=exc_info())
         return False
 
 
 class JWTBearer(HTTPBearer):
+    """
+    JWT Bearer Token based authentication dependency injection class
+    """
+
     def __init__(self, *, auto_error: bool = True):
         super(JWTBearer, self).__init__(
             bearerFormat="Bearer Format",

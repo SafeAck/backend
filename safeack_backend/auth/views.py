@@ -1,15 +1,18 @@
 from typing import Annotated
-from fastapi import APIRouter, Body, Depends, status, HTTPException
+from fastapi import Body, Depends, Security, HTTPException, APIRouter, status
 from fastapi.security import SecurityScopes, OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from .schemas import UserCreateSchema, UserLoginSchema, TokenResponseSchema
-from .crud import create_user, get_user_by_email
+
+from . import MePerm
+from .schemas import UserCreateSchema, UserLoginSchema, TokenResponseSchema, UserScannerTokenSchema
+from .crud import create_user, get_user_by_email, get_user_active_status
 from .permissions import superuser_permissions, role_based_scopes
 from .handler import sign_jwt, create_oauth_jwt, jwt_decode, JWTBearer
 from .password import verify_password
 from ..config import JWT_EXPIRY, JWT_ALGORITHM, JWT_SECRET
 from ..database import get_db
 from ..logger import create_logger
+
 
 logger = create_logger(__name__)
 
@@ -38,6 +41,9 @@ async def signup(user: UserCreateSchema = Body(...), db: Session = Depends(get_d
 async def login(
     user_data: UserLoginSchema = Body(...), db: Session = Depends(get_db)
 ) -> TokenResponseSchema:
+    """
+    Generate auth token for user using email and password
+    """
     msg = "Failed to login! Check email and password!"
     token = None
     user = get_user_by_email(db, user_data.email)
@@ -63,7 +69,7 @@ async def login_for_access_token(
 
     if user and user.is_active and verify_password(password, user.hashed_password):
         valid_scopes = list(set(scopes) & set(role_based_scopes[user.role.value].keys()))
-        token = create_oauth_jwt(user.id, user.role.value, valid_scopes, JWT_EXPIRY)
+        token = create_oauth_jwt(user.id, user.role, valid_scopes, JWT_EXPIRY)
         if token:
             msg = "token generated successfully"
 
@@ -109,3 +115,28 @@ def validate_user_perms(
             )
 
     return user_id
+
+
+@auth_router.post("/scan-token")
+async def generate_scanner_token(
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value])],
+    data: UserScannerTokenSchema = Body(...),
+    db: Session = Depends(get_db),
+) -> TokenResponseSchema:
+    """
+    Generates JWT token for SafeACK Scanner
+    """
+    msg = "User is inactive"
+    token = None
+
+    is_active, role = get_user_active_status(db=db, user_id=user_id)
+    if is_active and role:
+        msg = "Scanner Auth Token Generated Successfully"
+        token = create_oauth_jwt(
+            user_id=user_id,
+            role=role,
+            expiry_minutes=data.expiry_minutes,
+            scopes=[MePerm.WRITE_RESULTS.value],
+        )
+
+    return TokenResponseSchema(msg=msg, access_token=token)
