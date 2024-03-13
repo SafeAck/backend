@@ -47,7 +47,7 @@ async def test_scanner_token_validation():
         res_body = res.json()
 
         status_code = res_body.get("status_code", None)
-        message = res_body.get("message", None)
+        message = res_body.get("msg", None)
 
         assert status_code == 200
         assert message == "Authentication successful"
