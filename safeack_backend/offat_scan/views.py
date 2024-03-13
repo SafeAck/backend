@@ -117,3 +117,23 @@ async def get_result(
         msg = "user is inactive"
 
     return ResponseSchema(msg=msg, data=data, status_code=status_code)
+
+
+@scan_router.get("/auth-ping")
+async def scanner_auth_token_validation(
+    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value])],
+    db: Session = Depends(get_db),
+):
+    """View to validate scanner auth token"""
+    msg = "failed to store scan results"
+    status_code = 401
+
+    user = get_user(db, user_id)
+    if user and user.is_active:
+        status_code = 200
+        msg = "Authentication successful"
+    else:
+        status_code = 403
+        msg = "user is inactive"
+
+    return ResponseSchema(msg=msg, data=None, status_code=status_code)
