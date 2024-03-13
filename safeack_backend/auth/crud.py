@@ -19,7 +19,7 @@ def get_user_active_status(db: Session, user_id: int) -> tuple:
     )
 
     return (
-        user_data.tuple()
+        user_data._tuple()
         if user_data
         else (
             None,
