@@ -10,7 +10,7 @@ from .offat_scan import scan_router
 
 
 async def validation_exception_handler(request, exc):
-    # Custom exception handler for RequestValidationError
+    """Custom exception handler for RequestValidationError"""
     return JSONResponse(
         status_code=422,
         content={"detail": "Invalid input data"},

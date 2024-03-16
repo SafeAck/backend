@@ -33,15 +33,11 @@ async def save_result(
     """view to save result s3 bucket path"""
     msg = "failed to store scan results"
     status_code = 500
-    user = get_user(db, user_id)
-    if user and user.is_active:
-        scan_result = create_result(db, user_id, result)
-        if scan_result:
-            status_code = 200
-            msg = "scan results stored successfully"
-    else:
-        status_code = 403
-        msg = "user is inactive"
+
+    scan_result = create_result(db, user_id, result)
+    if scan_result:
+        status_code = 200
+        msg = "scan results stored successfully"
 
     return ResponseSchema(msg=msg, data=None, status_code=status_code)
 
@@ -56,28 +52,18 @@ async def get_results(
     db: Session = Depends(get_db),
 ):
     """allow user to view their uploaded results"""
-    msg = "failed to get scan results"
-    data = None
-    status_code = 500
-
-    user = get_user(db, user_id)
-
-    if user and user.is_active:
-        status_code = 200
-        msg = "scan results fetched successfully"
-        scan_results = get_user_results(
-            db=db,
-            user_id=user_id,
-            skip=skip,
-            limit=limit,
-        )
-        data = orm_query_response_to_dict(
-            query=scan_results,
-            approach_type='whitelist',
-        )
-    else:
-        status_code = 403
-        msg = "user is inactive"
+    status_code = 200
+    msg = "scan results fetched successfully"
+    scan_results = get_user_results(
+        db=db,
+        user_id=user_id,
+        skip=skip,
+        limit=limit,
+    )
+    data = orm_query_response_to_dict(
+        query=scan_results,
+        approach_type='whitelist',
+    )
 
     return ResponseSchema(msg=msg, data=data, status_code=status_code)
 
@@ -95,32 +81,26 @@ async def get_result(
     msg = "failed to get scan result"
     data = None
     status_code = 404
-    user = get_user(db, user_id)
 
-    if user and user.is_active:
-        # Security TODO: validate whether bucket belongs to user or not
-        bucket_path = get_scan_result_bucket_path(db=db, user_id=user_id, result_id=result_id)
+    # Security TODO: validate whether bucket belongs to user or not
+    bucket_path = get_scan_result_bucket_path(db=db, user_id=user_id, result_id=result_id)
 
-        if bucket_path:
-            matches = regexs["extract_s3_result_path"].match(bucket_path[0])
-            bucket_name = matches.group(1)
-            object_key = matches.group(2)
+    if bucket_path:
+        matches = regexs["extract_s3_result_path"].match(bucket_path[0])
+        bucket_name = matches.group(1)
+        object_key = matches.group(2)
 
-            url = generate_presigned_url(bucket_name, object_key, expiration)
+        url = generate_presigned_url(bucket_name, object_key, expiration)
 
-            if url:
-                status_code = 200
-                msg = "pre-signed url generated successfully"
-                data = [{"scan_result_link": url}]
-            else:
-                msg = "failed to generate pre-signed url"
-
+        if url:
+            status_code = 200
+            msg = "pre-signed url generated successfully"
+            data = [{"scan_result_link": url}]
         else:
-            logger.warning("user_id: %d tried to access result_id:%d", user_id, result_id)
+            msg = "failed to generate pre-signed url"
 
     else:
-        status_code = 403
-        msg = "user is inactive"
+        logger.warning("user_id: %d tried to access result_id:%d", user_id, result_id)
 
     return ResponseSchema(msg=msg, data=data, status_code=status_code)
 
@@ -130,18 +110,9 @@ async def scanner_auth_token_validation(
     user_id: Annotated[
         int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value], use_cache=False)
     ],
-    db: Session = Depends(get_db),
 ):
     """View to validate scanner auth token"""
-    msg = "failed to store scan results"
-    status_code = 401
-
-    user = get_user(db, user_id)
-    if user and user.is_active:
-        status_code = 200
-        msg = "Authentication successful"
-    else:
-        status_code = 403
-        msg = "user is inactive"
+    status_code = 200
+    msg = "Authentication successful"
 
     return ResponseSchema(msg=msg, data=None, status_code=status_code)
