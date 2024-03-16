@@ -24,7 +24,9 @@ scan_router = APIRouter(prefix="/api/v1/scanner", tags=["scan"], redirect_slashe
 
 @scan_router.post("/results")
 async def save_result(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value])],
+    user_id: Annotated[
+        int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value], use_cache=False)
+    ],
     result: ScanResultSchema = Body(...),
     db: Session = Depends(get_db),
 ) -> ResponseSchema:
@@ -46,7 +48,9 @@ async def save_result(
 
 @scan_router.get("/results")
 async def get_results(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.value])],
+    user_id: Annotated[
+        int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.value], use_cache=False)
+    ],
     skip: int = Query(0, alias="page", ge=0),
     limit: int = Query(10, ge=0, le=50),
     db: Session = Depends(get_db),
@@ -80,7 +84,9 @@ async def get_results(
 
 @scan_router.get("/result-aws-link/{result_id}")
 async def get_result(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.value])],
+    user_id: Annotated[
+        int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.value], use_cache=False)
+    ],
     result_id: int,
     expiration: int = Query(300, ge=120, le=604800),
     db: Session = Depends(get_db),
@@ -121,7 +127,9 @@ async def get_result(
 
 @scan_router.get("/auth-ping")
 async def scanner_auth_token_validation(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value])],
+    user_id: Annotated[
+        int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value], use_cache=False)
+    ],
     db: Session = Depends(get_db),
 ):
     """View to validate scanner auth token"""

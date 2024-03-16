@@ -134,7 +134,9 @@ def validate_user_perms(
 
 @auth_router.post("/scan-token")
 async def generate_scanner_token(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value])],
+    user_id: Annotated[
+        int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value], use_cache=False)
+    ],
     data: UserScannerTokenSchema = Body(...),
     db: Session = Depends(get_db),
 ) -> TokenResponseSchema:

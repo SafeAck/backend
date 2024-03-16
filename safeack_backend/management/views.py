@@ -48,7 +48,8 @@ async def enable_user(
 @mgmt_router.get("/users")
 async def get_users_list(
     user_id: Annotated[
-        int, Security(validate_user_perms, scopes=[StaffPerm.RESTRICTED_READ.value])
+        int,
+        Security(validate_user_perms, scopes=[StaffPerm.RESTRICTED_READ.value], use_cache=False),
     ],
     skip: int = Query(0, alias="page", ge=0),
     limit: int = Query(10, ge=0, le=50),

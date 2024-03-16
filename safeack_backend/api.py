@@ -47,6 +47,8 @@ async def read_root() -> dict:
 
 @app.get("/restricted", tags=["root"])
 async def restricted(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.value])],
+    user_id: Annotated[
+        int, Security(validate_user_perms, scopes=[MePerm.READ.value], use_cache=False)
+    ],
 ) -> dict:
     return {"msg": "SafeAck Backend is Up", "user_id": user_id}
