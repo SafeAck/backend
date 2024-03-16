@@ -9,7 +9,6 @@ from . import (
     app,
     base_url,
     TestingSessionLocal,
-    normal_user_email,
     normal_user_passwd,
     superuser_email,
     superuser_passwd,
