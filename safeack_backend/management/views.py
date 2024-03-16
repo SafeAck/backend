@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from .schemas import EnableUserSchema, UserSchema
 from .utils import mask_user_data
 from ..auth import validate_user_perms, StaffPerm
-from ..auth.crud import activate_user, is_user_superuser, get_users, get_user_active_status
+from ..auth.crud import activate_user, is_user_superuser, get_users
 from ..database import get_db
 from ..logger import create_logger
 from ..utils.schemas import ResponseSchema

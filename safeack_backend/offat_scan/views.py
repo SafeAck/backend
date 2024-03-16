@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from .schemas import ScanResultSchema
 from .crud import create_result, get_user_results, get_scan_result_bucket_path
 from ..auth import validate_user_perms, MePerm
-from ..auth.crud import get_user
 from ..database import get_db
 from ..logger import create_logger
 from ..utils.aws.s3 import generate_presigned_url
