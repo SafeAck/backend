@@ -24,6 +24,7 @@ class StaffPerm(Enum):
     '''Staff User Permissions'''
 
     RESTRICTED_READ = "staff:restricted_read"
+    ENABLE_USER = "staff:enable_user"
 
 
 user_permissions: dict[str, str] = {
@@ -36,6 +37,7 @@ user_permissions: dict[str, str] = {
 
 staff_permissions: dict[str, str] = {
     StaffPerm.RESTRICTED_READ.value: "read all users scan results",
+    StaffPerm.ENABLE_USER.value: "can enable user",
 }
 
 # make sure user and staff permission have unique keys

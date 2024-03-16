@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from .config import DEV_ENV
 from .auth import auth_router, validate_user_perms
 from .auth.permissions import MePerm
+from .management import mgmt_router
 from .offat_scan import scan_router
 
 
@@ -35,6 +36,7 @@ if not DEV_ENV:
 # register routers below
 app.include_router(auth_router)
 app.include_router(scan_router)
+app.include_router(mgmt_router)
 
 
 @app.get("/", tags=["root"])

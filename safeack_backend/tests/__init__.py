@@ -7,6 +7,7 @@ from ..api import app
 
 import pytest
 
+
 # Test DB Config
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
@@ -39,3 +40,11 @@ def anyio_backend():
 
 # for Async Test Client
 base_url = "http://localhost:8080"
+
+
+# user config
+normal_user_email = "john.doe@example.com"
+normal_user_passwd = "ExamPL3P4$$W0rD!!0194"
+
+superuser_email = "superuser@example.com"
+superuser_passwd = "SupeeerExamPL3P4$$W0rD!!0194"

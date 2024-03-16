@@ -6,6 +6,8 @@ from ..database import Base
 
 
 class User(Base):
+    """User Model"""
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
@@ -14,6 +16,7 @@ class User(Base):
     last_name = Column(String)
     full_name = Column(String)
     is_active = Column(Boolean, default=False)
+    is_superuser = Column(Boolean, default=False)
     role = Column(Enum(Role), default=Role.USER)
     hashed_password = Column(String)
 

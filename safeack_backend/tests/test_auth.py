@@ -5,8 +5,16 @@ Module for testing Authentication
 import pytest
 
 from httpx import Response, AsyncClient
-from . import app, base_url, TestingSessionLocal
-from .utils import set_user_active
+from . import (
+    app,
+    base_url,
+    TestingSessionLocal,
+    normal_user_email,
+    normal_user_passwd,
+    superuser_email,
+    superuser_passwd,
+)
+from .utils import set_user_active, set_user_superuser
 
 
 # This is the same as using the @pytest.mark.anyio on all test functions in the module
@@ -17,27 +25,49 @@ async def test_create_user():
     """
     Creates user sign up creation functionality
     """
-    email = "john.doe@example.com"
     payload = {
-        "email": email,
+        "email": normal_user_email,
         "first_name": "John",
         "full_name": "John Doe",
         "last_name": "Doe",
-        "password": "ExamPL3P4$$W0rD!!0194",
+        "password": normal_user_passwd,
     }
 
     async with AsyncClient(app=app, base_url=base_url) as ac:
-        # TODO: mark this newly created user active, else jobs will break
         res: Response = await ac.post("/api/v1/auth/signup", json=payload)
         res_body = res.json()
+        assert res.status_code == 200
+        assert res_body == {"msg": "user signed up sucessfully"}
 
         # mark this newly created user active
         db = TestingSessionLocal()
-        set_user_active(db, email)
+        set_user_active(db, normal_user_email)
         db.close()
+
+
+async def test_create_superuser():
+    """
+    Creates user sign up creation functionality
+    """
+    payload = {
+        "email": superuser_email,
+        "first_name": "Super",
+        "last_name": "Doe",
+        "full_name": "Super Doe",
+        "password": superuser_passwd,
+    }
+
+    async with AsyncClient(app=app, base_url=base_url) as ac:
+        res: Response = await ac.post("/api/v1/auth/signup", json=payload)
+        res_body = res.json()
 
         assert res.status_code == 200
         assert res_body == {"msg": "user signed up sucessfully"}
+
+        # mark this newly created user active
+        db = TestingSessionLocal()
+        set_user_superuser(db, superuser_email)
+        db.close()
 
 
 async def test_unsuccessful_create_user():

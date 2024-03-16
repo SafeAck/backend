@@ -109,6 +109,7 @@ def validate_user_perms(
 
     for scope in security_scopes.scopes:
         if scope not in role_scope_keys:
+            logger.warning('user id %d tried to access unauthorized data', user_id)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Not enough permissions",
