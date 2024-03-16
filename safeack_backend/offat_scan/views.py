@@ -27,7 +27,7 @@ async def save_result(
     user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.WRITE_RESULTS.value])],
     result: ScanResultSchema = Body(...),
     db: Session = Depends(get_db),
-):
+) -> ResponseSchema:
     """view to save result s3 bucket path"""
     msg = "failed to store scan results"
     status_code = 500

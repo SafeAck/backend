@@ -6,8 +6,15 @@ from .schemas import ScanResultSchema
 
 def get_user_results(db: Session, user_id: int, skip: int = 0, limit: int = 50) -> list[ScanResult]:
     """get all scans for provided user id"""
+    skip = (skip - 1) * limit
+
     return (
-        db.query(ScanResult).filter(ScanResult.owner_id == user_id).offset(skip).limit(limit).all()
+        db.query(ScanResult)
+        .filter(ScanResult.owner_id == user_id)
+        .order_by(ScanResult.id)
+        .offset(skip)
+        .limit(limit)
+        .all()
     )
 
 
