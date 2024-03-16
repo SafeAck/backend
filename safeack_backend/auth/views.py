@@ -80,6 +80,7 @@ def validate_user_perms(
     security_scopes: SecurityScopes,
     token: Annotated[str, Depends(oauth2_scheme, use_cache=True)]
     or Annotated[str, Depends(JWTBearer(), use_cache=True)],
+    db: Session = Depends(get_db),
 ) -> int:
     '''validates current user permission and returns user id. Raises exception if current user lack permissions'''
     try:
@@ -95,8 +96,21 @@ def validate_user_perms(
             detail="Invalid Token",
         )
 
-    user_role = decoded_token["role"]
     user_id = int(decoded_token["user_id"])
+
+    # get user auth details from db
+    is_active, user_role = get_user_active_status(db=db, user_id=user_id)
+    if not is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User Inactive! Contact Administrator",
+        )
+
+    # update user role from db else fall back to token role
+    if user_role:
+        user_role = user_role.value
+    else:
+        user_role = decoded_token["role"]
 
     # for oauth
     role_scopes = decoded_token.get("scope", None)
