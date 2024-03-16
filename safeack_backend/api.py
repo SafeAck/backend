@@ -10,7 +10,7 @@ from .offat_scan import scan_router
 
 
 async def validation_exception_handler(request, exc):
-    # Custom exception handler for RequestValidationError
+    """Custom exception handler for RequestValidationError"""
     return JSONResponse(
         status_code=422,
         content={"detail": "Invalid input data"},
@@ -47,6 +47,8 @@ async def read_root() -> dict:
 
 @app.get("/restricted", tags=["root"])
 async def restricted(
-    user_id: Annotated[int, Security(validate_user_perms, scopes=[MePerm.READ.value])],
+    user_id: Annotated[
+        int, Security(validate_user_perms, scopes=[MePerm.READ.value], use_cache=False)
+    ],
 ) -> dict:
     return {"msg": "SafeAck Backend is Up", "user_id": user_id}
