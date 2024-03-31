@@ -22,7 +22,7 @@ app = FastAPI(
     debug=DEV_ENV,
     openapi_url='/api/v1/openapi.json' if DEV_ENV else None,
     servers=[
-        {"url": "http://localhost:8080", "description": "Local environment"},
+        {"url": "http://localhost:8000", "description": "Local environment"},
         # {"url": "http://localhost:8000", "description": "Production environment"},
     ],
     docs_url='/docs' if DEV_ENV else None,

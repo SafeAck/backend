@@ -8,9 +8,18 @@ from alembic import context
 from safeack_backend.database import Base
 from safeack_backend.models import *  # noqa: F401 F403
 
+# set db url from .env file
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+config.set_main_option(
+    "sqlalchemy.url", environ.get("SQLALCHEMY_DATABASE_URL", "sqlite:///./sql_app.db")
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
