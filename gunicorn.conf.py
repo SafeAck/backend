@@ -9,7 +9,7 @@ ENV: str = environ.get("ENV", "PRODUCTION")
 DEV_ENV: bool = True if ENV in ["LOCAL", "DEV_ENV"] else False
 
 if DEV_ENV:
-    PORT = 8080
+    PORT = 8000
     WORKERS = 2
     RELOAD = True
     ACCESS_LOG = "-"
@@ -23,7 +23,7 @@ else:
 
 
 # config: https://docs.gunicorn.org/en/latest/settings.html
-bind = [f"localhost:{PORT}"]
+bind = [f"0.0.0.0:{PORT}"]
 wsgi_app = "safeack_backend.api:app"
 proc_name = "safeack_backend"
 

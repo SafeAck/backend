@@ -218,5 +218,8 @@ poetry.toml
 pyrightconfig.json
 
 # ignore sqlite dbs
-
 *.db
+
+# docker container ignores
+gunicorn-logs
+db-data
