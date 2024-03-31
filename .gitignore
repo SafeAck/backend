@@ -223,3 +223,4 @@ pyrightconfig.json
 # docker container ignores
 gunicorn-logs
 db-data
+docker.env

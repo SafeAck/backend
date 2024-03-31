@@ -13,20 +13,20 @@ services:
         volumes:
             - ./db-data:/var/lib/postgresql/data
 
-    # backend:
-    #     image: safeack/safeack-backend:latest
-    #     ports:
-    #         - "8000:8000"
-    #     networks:
-    #         - safeack
-    #     depends_on:
-    #         - db
-    #     environment:
-    #         SQLALCHEMY_DATABASE_URL: sqlite:///./sql_app.db # TODO: change to postgresql from sqlite
-    #     env_file:
-    #         - ./docker.env
-    #     volumes:
-    #         - ./gunicorn-logs:/var/log/gunicorn
+    backend:
+        image: safeack/safeack-backend:latest
+        ports:
+            - "8000:8000"
+        networks:
+            - safeack
+        depends_on:
+            - db
+        environment:
+            SQLALCHEMY_DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/safeackdb
+        env_file:
+            - ./docker.env
+        volumes:
+            - ./gunicorn-logs:/var/log/gunicorn
 
 networks:
     safeack:
