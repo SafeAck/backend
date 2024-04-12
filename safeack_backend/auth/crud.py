@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models, schemas, password
+from .permissions import Role
 
 
 def get_user(db: Session, user_id: int) -> models.User | None:
@@ -78,8 +79,21 @@ def activate_user(db: Session, user_id: int):
     return rows_updated
 
 
-def create_user(db: Session, user: schemas.UserCreateSchema, is_active: bool = False):
+def create_user(
+    db: Session,
+    user: schemas.UserCreateSchema,
+    is_active: bool = False,
+    is_staff: bool = True,
+    is_superuser: bool = False,
+):
     hashed_password = password.get_password_hash(user.password)
+
+    role = Role.USER
+    if is_superuser:
+        role = Role.SUPERUSER
+    elif is_staff:
+        role = Role.STAFF
+
     db_user = models.User(
         first_name=user.first_name,
         last_name=user.last_name,
@@ -87,6 +101,8 @@ def create_user(db: Session, user: schemas.UserCreateSchema, is_active: bool = F
         email=user.email,
         hashed_password=hashed_password,
         is_active=is_active,
+        is_superuser=is_superuser,
+        role=role,
     )
     db.add(db_user)
     db.commit()

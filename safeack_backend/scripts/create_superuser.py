@@ -32,7 +32,7 @@ if __name__ == '__main__':
             password=args.password,
         )
 
-        user = create_user(db, user_data, is_active=True)
+        user = create_user(db, user_data, is_active=True, is_superuser=True)
         if user:
             print(f'[*] User created successfully: {user.email}')
         else:

@@ -45,8 +45,8 @@ async def get_users_list(
         int,
         Security(validate_user_perms, scopes=[StaffPerm.RESTRICTED_READ.value], use_cache=False),
     ],
-    skip: int = Query(0, alias="page", ge=0),
-    limit: int = Query(10, ge=0, le=50),
+    skip: int = Query(1, alias="page", ge=1),
+    limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db),
 ) -> list[UserSchema] | ResponseSchema:
     """

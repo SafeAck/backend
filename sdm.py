@@ -108,7 +108,7 @@ def deploy():
 
 
 if __name__ == "__main__":
-    cmd_choices = ['start', 'stop', 'upgrade', 'migrate', 'shell']
+    cmd_choices = ['deploy', 'start', 'stop', 'upgrade', 'migrate', 'shell']
     parser = ArgumentParser('sdm')
     parser.add_argument(choices=cmd_choices, dest='action')
 
@@ -125,3 +125,5 @@ if __name__ == "__main__":
             migrate_db()
         case 'shell':
             get_backend_shell()
+        case 'deploy':
+            deploy()

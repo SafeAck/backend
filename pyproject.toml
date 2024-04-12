@@ -27,11 +27,11 @@ psycopg2 = "^2.9.9"
 [tool.poetry.extras]
 test = ["pytest", "httpx", "flake8"]
 
-[tool.poetry.group.dev.dependencies]
-poetry = "^1.7.1"
-
 [tool.poetry.scripts]
 safeack-backend = "safeack_backend.__main__:start"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.7.0"
 
 [build-system]
 requires = ["poetry-core"]

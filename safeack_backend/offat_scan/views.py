@@ -46,8 +46,8 @@ async def get_results(
     user_id: Annotated[
         int, Security(validate_user_perms, scopes=[MePerm.READ_RESULTS.value], use_cache=False)
     ],
-    skip: int = Query(0, alias="page", ge=0),
-    limit: int = Query(10, ge=0, le=50),
+    skip: int = Query(1, alias="page", ge=1),
+    limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db),
 ):
     """allow user to view their uploaded results"""
@@ -104,6 +104,7 @@ async def get_result(
     return ResponseSchema(msg=msg, data=data, status_code=status_code)
 
 
+@scan_router.post("/result")
 @scan_router.get("/auth-ping")
 async def scanner_auth_token_validation(
     user_id: Annotated[
